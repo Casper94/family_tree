@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Family Tree</title>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node circle {
+            fill: #999;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .node text {
+            font: 12px sans-serif;
+        }
+        .link {
+            fill: none;
+            stroke: #555;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Family Tree</h1>
+    <div id="tree"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        fetch('/api/family_tree/')
+            .then(response => response.json())
+            .then(data => {
+                const treeData = transformData(data);
+                drawTree(treeData);
+            });
+
+        function transformData(data) {
+            const persons = data.persons;
+            const relationships = data.relationships;
+            let personMap = {};
+
+            persons.forEach(person => {
+                personMap[person.id] = { ...person, children: [] };
+            });
+
+            relationships.forEach(rel => {
+                personMap[rel.parent.id].children.push(personMap[rel.child.id]);
+            });
+
+            return Object.values(personMap).filter(person => !relationships.some(rel => rel.child.id === person.id));
+        }
+
+        function drawTree(treeData) {
+            const width = 960;
+            const height = 500;
+
+            const svg = d3.select("#tree").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(40,0)");
+
+            const root = d3.hierarchy(treeData[0]);
+
+            const treeLayout = d3.tree().size([height, width - 160]);
+
+            treeLayout(root);
+
+            svg.selectAll('.link')
+                .data(root.links())
+                .enter()
+                .append('path')
+                .attr('class', 'link')
+                .attr('d', d3.linkHorizontal()
+                    .x(d => d.y)
+                    .y(d => d.x));
+
+            const node = svg.selectAll('.node')
+                .data(root.descendants())
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.y},${d.x})`);
+
+            node.append('circle')
+                .attr('r', 5);
+
+            node.append('text')
+                .attr('dy', '.35em')
+                .attr('x', d => d.children ? -13 : 13)
+                .style('text-anchor', d => d.children ? 'end' : 'start')
+                .text(d => d.data.name);
+        }
+    </script>
+</body>
+</html>
