@@ -1,0 +1,12 @@
+{% extends 'tree/../base.html' %}
+
+{% block title %}Family Members{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-4">Family Members</h1>
+<ul class="list-disc pl-6">
+    {% for member in members %}
+        <li class="mb-2">{{ member.name }} - {{ member.birth_date }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Person, Relationship
+from .models import FamilyMember
 
-admin.site.register(Person)
-admin.site.register(Relationship)
+admin.site.register(FamilyMember)

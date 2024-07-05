@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import family_tree_api, family_tree
+from .views import FamilyMemberListView, FamilyTreeView
 
 urlpatterns = [
-    path('api/family_tree/', family_tree_api, name='family_tree_api'),
-    path('', family_tree, name='family_tree'),
+    path('members/', FamilyMemberListView.as_view(), name='family_member_list'),
+    path('', FamilyTreeView.as_view(), name='family_tree'),
 ]
