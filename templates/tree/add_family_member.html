@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Family Member{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-4">Add Family Member</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Add Member</button>
+</form>
+{% endblock %}
